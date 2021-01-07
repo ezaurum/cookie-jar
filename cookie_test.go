@@ -1,6 +1,7 @@
 package jar
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
@@ -68,12 +69,14 @@ func TestSet(t *testing.T) {
 			Value: "GetCookieValue2",
 			Path:  r.RequestURI,
 		})
+
+		// 쓰기
+		j.Write()
 	}))
 
 	defer ts.Close()
 
 	u, err := url.Parse(ts.URL)
-	assert.NoError(t, err)
 
 	assert.NoError(t, err)
 	client := &http.Client{}
@@ -94,6 +97,7 @@ func TestSet(t *testing.T) {
 	// Get 으로 가져올 수 있다
 	// Set으로 쿠키값을 지정하면
 	// response 에 해당값이 있다
+	fmt.Println(res.Header)
 	get := res.Header["Set-Cookie"]
 	assert.Regexp(t, "SetCookie=SetCookieValue", get)
 	assert.Regexp(t, "GetCookie=GetCookieValue2", get)
@@ -114,6 +118,9 @@ func TestRemove(t *testing.T) {
 			Value: "SetCookieValue",
 			Path:  r.RequestURI,
 		})
+
+		// 쓰기
+		j.Write()
 	}))
 
 	defer ts.Close()
